@@ -63,8 +63,10 @@ class CourseController extends Controller
 
         $student = Enrollment::where('course_id' , $courseId)->get();
 
-        return $student;
+        // $student = Student::whereHas('courses')
+        // ->where('id' , $courseId)->get();
+        // return $student;
     }
 
-    
+
 }
