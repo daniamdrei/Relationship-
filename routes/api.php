@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\API\CourseController;
+use App\Http\Controllers\API\StudentController;
+use App\Http\Controllers\API\TeacherController;
+use App\Http\Controllers\CourseController as ControllersCourseController;
 use App\Models\Course;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -14,9 +15,29 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-Route::apiResource('student' , StudentController::class);
-Route::apiResource('teacher' , TeacherController::class);
-Route::apiResource('course' , CourseController::class);
+Route::group(['prefix'=>'courses'] , function(){
+    Route::get('all' , [CourseController::class ,'index']);
+    Route::post('/' , [CourseController::class , 'store']);
+    Route::get('{id}/show' , [CourseController::class , 'show']);
+    Route::put('{id}/update' , [CourseController::class , 'update']);
+    Route::delete('{id}/delete' , [CourseController::class , 'destroy']);
+});
+
+Route::group(['prefix'=>'students'] , function(){
+    Route::get('all' , [StudentController::class ,'index']);
+    Route::post('/' , [StudentController::class , 'store']);
+    Route::get('{id}/show' , [StudentController::class , 'show']);
+    Route::put('{id}/update' , [StudentController::class , 'update']);
+    Route::delete('{id}/delete' , [StudentController::class , 'destroy']);
+});
+
+Route::group(['prefix'=>'teachers'] , function(){
+    Route::get('all' , [TeacherController::class ,'index']);
+    Route::post('/' , [TeacherController::class , 'store']);
+    Route::get('{id}/show' , [TeacherController::class , 'show']);
+    Route::put('{id}/update' , [TeacherController::class , 'update']);
+    Route::delete('{id}/delete' , [TeacherController::class , 'destroy']);
+});
 
 Route::post('enroll/student/{id}', [StudentController::class , 'enroll']);
 Route::get('student_under_course/{id}' , [CourseController::class , 'studentUnderCourse']);

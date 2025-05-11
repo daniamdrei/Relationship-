@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
@@ -14,7 +14,7 @@ class CourseController extends Controller
     public function index(){
 
         $courses = Course::all();
-        return response()->json($courses);
+        return $this->api_response(true , 'fetch data successfully' , $courses , 200);
     }
     public function store( Request $request){
         $validated = Validator::make($request->all(),[
@@ -23,7 +23,7 @@ class CourseController extends Controller
                     ]);
 
                     if($validated->fails()){
-                        return response()->json($validated->errors(),400);
+                        return $this->api_response(false, 'course Not Found', [], 404);
                     }
         $course = Course::create([
             'teacher_id'=>$request->teacher_id,
@@ -42,7 +42,7 @@ class CourseController extends Controller
         ]);
 
         if($validated->fails()){
-            return response()->json($validated->errors(),400);
+            return $this->api_response(false, 'course Not Found', [], 404);
         }
 
         $course->update([
@@ -56,16 +56,22 @@ class CourseController extends Controller
     }
     public function destroy( Course $course){
         $course->delete();
-        return response()->json(['message'=>'course deleted successfully']);
+        return response()->json(['message'=>'course creates successfully']);
+
     }
 
     public function studentUnderCourse(string $courseId){
 
-        $student = Enrollment::where('course_id' , $courseId)->get();
+        //
+        $course = Course::findOrFail($courseId);
 
-        // $student = Student::whereHas('courses')
-        // ->where('id' , $courseId)->get();
-        // return $student;
+        if(!isset($course)){
+            return $this->api_response(false, 'course Not Found', [], 404);
+        }
+
+        $students = Enrollment::where('course_id' , $courseId)->get();
+        
+        return $this->api_response(true , 'all student' , $students , 200);
     }
 
 
